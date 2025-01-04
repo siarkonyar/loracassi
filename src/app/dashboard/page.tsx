@@ -72,55 +72,55 @@ export default function HomePage() {
             breakpoints={{
               // when window width is >= 320px
               320: {
-                slidesPerView: 1,
+                slidesPerView: 2,
                 spaceBetween: 10,
               },
               // when window width is >= 768px
               768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
+                slidesPerView: 3,
+                spaceBetween: 10,
               },
               // when window width is >= 1024px
               1024: {
-                slidesPerView: 3,
-                spaceBetween: 30,
+                slidesPerView: 4,
+                spaceBetween: 10,
               },
             }}
             className="item-card-swiper-carousel"
           >
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
+                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
+                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
+                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
+                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
+                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
+                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
+                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
               </div>
             </SwiperSlide>
           </Swiper>

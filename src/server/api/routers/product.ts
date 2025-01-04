@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 
 import { ProductSchema } from "prisma/generated/zod";
 
 
 export const productRouter = createTRPCRouter({
-  getProduct: protectedProcedure
+  getProduct: publicProcedure
     .input(z.object({
       id: z.string()
     }))
