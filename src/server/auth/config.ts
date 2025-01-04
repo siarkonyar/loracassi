@@ -2,8 +2,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-
-import { db } from "~/server/db";
+import prisma from "../../server/db"
+import { verifyPassword } from "~/scripts/utils/hash";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -32,27 +32,57 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig = {
+  adapter: PrismaAdapter(prisma),
   providers: [
-    CredentialsProvider,
-    GoogleProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-  ],
-  adapter: PrismaAdapter(db),
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Email", type: "string" },
+        password: { label: "Password", type: "password" },
       },
+      async authorize(credentials: Partial<Record<"username" | "password", unknown>> | undefined) {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
+
+        // Find the user by email
+        const user = await prisma.user.findFirst({
+          where: {
+            email: credentials.username,
+          },
+        })
+
+        if (!user) {
+          throw new Error("No user found with the provided email");
+        }
+        console.log(user)
+        // Validate the provided password against the stored hashed password
+        const isPasswordValid = await verifyPassword(credentials.password as string, user.password);
+        if (!isPasswordValid) {
+          throw new Error("Invalid password");
+        }
+
+        // Exclude sensitive fields before returning the user object
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      }
+
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
+  pages: {
+    signIn: "/auth/signin",
+    signOut: "/auth/signout",
+    error: "/auth/error",
+    verifyRequest: "/auth/verify",
+    newUser: "/auth/new-user",
   },
+  secret: process.env.AUTH_SECRET,
+  session:{
+    strategy: "jwt" as const,
+  },
+  debug: process.env.NODE_ENV !== "production"
 } satisfies NextAuthConfig;

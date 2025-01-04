@@ -1,0 +1,10 @@
+.lc-header{
+  &::after {
+    transform: translate(0px, 5px);
+		display: block;
+		border-bottom: 5px solid #D6BC97;
+		width: 40px;
+		content: "";
+		margin: auto;
+	}
+}
