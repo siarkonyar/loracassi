@@ -5,15 +5,6 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      "fs": false,
-      "net": false,
-    };
-    return config;
-  },
-};
+const config = {};
 
 export default config;

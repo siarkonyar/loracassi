@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import Navbar from "../_components/layout/Navbar";
-import countries from "../_source/countryCodes";
-import { api } from "~/trpc/react";
 import { signIn } from "~/server/auth";
 
 export default function Page() {
