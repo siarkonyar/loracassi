@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 
 import { UserPartialSchema } from "prisma/generated/zod";
@@ -10,7 +11,7 @@ import { hashPassword } from "~/scripts/utils/hash";
 
 
 export const userRouter = createTRPCRouter({
-  register: protectedProcedure
+  register: publicProcedure
     .input(
       UserPartialSchema.or(z.null())
     )

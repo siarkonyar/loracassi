@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="footer-line"></div>
       <footer className="w-100 bg-black text-white">
         <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col items-center justify-center gap-8 md:flex-row">
+          <div className="flex flex-col items-center justify-center gap-8 text-[#D6BC97] md:flex-row">
             {/* Logo Column */}
             <div className="flex justify-center md:justify-start">
               <Image
@@ -19,37 +19,78 @@ export default function Footer() {
                 className="object-contain"
               />
             </div>
-
-            {/* Navigation Links Column */}
-            <div>
-              <h3 className="mb-4 text-xl font-semibold">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="hover:text-gray-300">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="hover:text-gray-300">
-                    Products
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="hover:text-gray-300">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="hover:text-gray-300">
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="hover:text-gray-300">
-                    Privacy Policy
-                  </Link>
-                </li>
-              </ul>
+            <div className="flex gap-8">
+              {/* Navigation Links Column */}
+              <div>
+                <h3 className="mb-4 text-xl font-semibold">Information</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Blog
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Career
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Contact Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Export
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Payment
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="mb-4 text-xl font-semibold">Information</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Blog
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Career
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Contact Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Export
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" className="hover:text-gray-300">
+                      Payment
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

@@ -4,8 +4,6 @@ import React, { useState } from "react";
 import Navbar from "../_components/layout/Navbar";
 import countries from "../_source/countryCodes";
 import { api } from "~/trpc/react";
-import { UserPartialSchema } from "prisma/generated/zod";
-import { z } from "zod";
 
 export default function Page() {
   const [email, setEmail] = useState("");
@@ -24,12 +22,9 @@ export default function Page() {
 
   const registerMutation = api.user.register.useMutation();
 
-  const handleLogin = (data: {
-    email: string;
-    password: string;
-    firstName: string;
-    phoneNumber: string | null;
-  }) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     // Reset validation
     setEmailError(false);
     setFirstNameError(false);
@@ -71,7 +66,12 @@ export default function Page() {
 
     // Proceed if all fields are valid
     if (isValid) {
-      registerMutation.mutate(data);
+      registerMutation.mutate({
+        email,
+        password,
+        name: firstName,
+        phoneNumber: phoneNumber || null,
+      });
     }
   };
 
@@ -83,7 +83,7 @@ export default function Page() {
           <h2 className="lc-header mb-4 text-center text-2xl font-semibold">
             Sign Up
           </h2>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleLogin}>
             {/* Full Name */}
             <div>
               <label
@@ -248,7 +248,7 @@ export default function Page() {
                   id="phoneNumber"
                   value={phoneNumber}
                   onChange={(e) => {
-                    setPhoneNumber(countryCode + e.target.value);
+                    setPhoneNumber(e.target.value);
                     setPhoneNumberError(false);
                   }}
                   placeholder="123456789"

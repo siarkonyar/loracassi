@@ -57,6 +57,10 @@ export const authConfig = {
         }
         console.log(user)
         // Validate the provided password against the stored hashed password
+        if (!user.password) {
+          throw new Error("User has no password set");
+        }
+
         const isPasswordValid = await verifyPassword(credentials.password as string, user.password);
         if (!isPasswordValid) {
           throw new Error("Invalid password");
@@ -74,7 +78,7 @@ export const authConfig = {
     }),
   ],
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/login",
     signOut: "/auth/signout",
     error: "/auth/error",
     verifyRequest: "/auth/verify",
