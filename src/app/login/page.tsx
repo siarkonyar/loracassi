@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Navbar from "../_components/layout/Navbar";
 import countries from "../_source/countryCodes";
 import { api } from "~/trpc/react";
+import { signIn } from "~/server/auth";
 
 export default function Page() {
   const [email, setEmail] = useState("");
@@ -13,9 +14,7 @@ export default function Page() {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
-  const registerMutation = api.user.register.useMutation();
-
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Reset validation
@@ -38,7 +37,7 @@ export default function Page() {
 
     // Proceed if all fields are valid
     if (isValid) {
-      registerMutation.mutate({
+      await signIn("credentials", {
         email,
         password,
       });
