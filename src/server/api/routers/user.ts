@@ -8,9 +8,25 @@ import {
 
 import { UserPartialSchema } from "prisma/generated/zod";
 import { hashPassword } from "~/scripts/utils/hash";
+import { signIn } from "~/server/auth";
 
 
 export const userRouter = createTRPCRouter({
+  login: publicProcedure
+    .input(
+      UserPartialSchema.or(z.null())
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await signIn("credentials", {
+          email: input?.email,
+          password: input?.password,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }),
+
   register: publicProcedure
     .input(
       UserPartialSchema.or(z.null())

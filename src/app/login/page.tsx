@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "../_components/layout/Navbar";
-import { signIn } from "~/server/auth";
+import Navbar from "../_layout/Navbar";
+import { api } from "~/trpc/react";
 
 export default function Page() {
+  const loginMutation = api.user.login.useMutation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -35,7 +37,7 @@ export default function Page() {
 
     // Proceed if all fields are valid
     if (isValid) {
-      await signIn("credentials", {
+      loginMutation.mutate({
         email,
         password,
       });

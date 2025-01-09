@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
+import LoginStatus from "../_components/user/LoginStatus";
 
 export default function Navbar() {
   const [language, setLanguage] = useState("EN");
@@ -130,7 +131,7 @@ export default function Navbar() {
             className="object-contain" // Ensures image scales correctly
           />
         </div>
-        <div>asd</div>
+        <LoginStatus />
       </nav>
 
       <div className="navbar-line"></div>

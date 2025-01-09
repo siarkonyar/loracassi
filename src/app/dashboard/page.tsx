@@ -9,10 +9,10 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination"; // Create this file
-import Navbar from "../_components/layout/Navbar";
+import Navbar from "../_layout/Navbar";
 import ProductCard from "../_components/product/ProductCard";
 import GoldFrameButton from "../_components/buttons/GoldFrameButton";
-import Footer from "../_components/layout/Footer";
+import Footer from "../_layout/Footer";
 
 export default function HomePage() {
   return (

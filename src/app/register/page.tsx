@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "../_components/layout/Navbar";
+import Navbar from "../_layout/Navbar";
 import countries from "../_source/countryCodes";
 import { api } from "~/trpc/react";
 
