@@ -37,40 +37,40 @@ export const authConfig = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Email", type: "string" },
+        username: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials: Partial<Record<"username" | "password", unknown>> | undefined) {
-        if (!credentials?.username || !credentials?.password) {
+        const username = credentials?.username as string;
+        const password = credentials?.password as string;
+
+        if (!username || !password) {
           throw new Error("Email and password are required");
         }
 
         // Find the user by email
         const user = await prisma.user.findFirst({
-          where: {
-            email: credentials.username,
-          },
-        })
+          where: { email: username },
+        });
 
         if (!user) {
           throw new Error("No user found with the provided email");
         }
-        console.log(user)
-        // Validate the provided password against the stored hashed password
+
         if (!user.password) {
           throw new Error("User has no password set");
         }
 
-        const isPasswordValid = await verifyPassword(credentials.password as string, user.password);
+        // Validate password
+        const isPasswordValid = await verifyPassword(password, user.password);
         if (!isPasswordValid) {
           throw new Error("Invalid password");
         }
 
         // Exclude sensitive fields before returning the user object
-        const { password, ...userWithoutPassword } = user;
+        const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;
-      }
-
+      },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -78,7 +78,7 @@ export const authConfig = {
     }),
   ],
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/login",
     signOut: "/auth/signout",
     error: "/auth/error",
     verifyRequest: "/auth/verify",

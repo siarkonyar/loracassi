@@ -7,25 +7,93 @@ import {
 } from "~/server/api/trpc";
 
 import { UserPartialSchema } from "prisma/generated/zod";
-import { hashPassword } from "~/scripts/utils/hash";
+import { hashPassword, verifyPassword } from "~/scripts/utils/hash";
 import { signIn } from "~/server/auth";
+import { TRPCError } from "@trpc/server";
 
 
 export const userRouter = createTRPCRouter({
-  login: publicProcedure
-    .input(
-      UserPartialSchema.or(z.null())
-    )
-    .mutation(async ({ input }) => {
+login: publicProcedure
+    .input(UserPartialSchema.or(z.null())) // Ensure schema validation
+    .mutation(async ({ input, ctx }) => {
       try {
-        await signIn("credentials", {
-          email: input?.email,
-          password: input?.password,
+        // Check if user exists
+        const user = await ctx.db.user.findUnique({
+          where: { email: input?.email ?? "" },
         });
-      } catch (error) {
-        console.log(error);
+
+        if (!user) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "User not found",
+          });
+        }
+
+        // Ensure email and password are not null
+        const email = input?.email ?? "";
+        const password = input?.password ?? "";
+
+        if (!email || !password) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Email and password must be provided",
+          });
+        }
+
+        // Verify password
+        const isPasswordValid = await verifyPassword(password, user.password ?? "");
+        if (!isPasswordValid) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Incorrect password",
+          });
+        }
+
+        console.log("Attempting signIn with email:", email);
+
+        type SignInResult = {
+          error?: string;
+          ok?: boolean;
+          status?: number;
+          url?: string | null;
+        };
+
+        const result = (await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        })) as SignInResult;
+
+        console.log("SignIn result:", result);
+
+        if (!result || result.error) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: result.error ?? "Invalid credentials",
+          });
+        }
+
+        return {
+          success: true,
+          message: "Login successful",
+        };
+      } catch (error: unknown) {
+        console.error("Login error:", error);
+
+        if (error instanceof Error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: error.message ?? "An unexpected error occurred",
+          });
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred",
+        });
       }
     }),
+
 
   register: publicProcedure
     .input(

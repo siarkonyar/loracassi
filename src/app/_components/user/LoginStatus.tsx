@@ -1,18 +1,32 @@
 import Link from "next/link";
 import React from "react";
-import { auth } from "~/server/auth";
+import { useSession, signOut } from "next-auth/react";
 
-export default async function LoginStatus() {
-  const session = await auth();
+export default function LoginStatus() {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <div className="text-[#D6BC97]">Loading...</div>;
+  }
 
   return (
     <>
       {session?.user ? (
-        <div className="color-[#D6BC97]">{session.user.name}</div>
+        <div className="flex items-center gap-4 text-[#D6BC97]">
+          <span>{session.user.name}</span>
+          <button
+            onClick={() => signOut()}
+            className="rounded bg-gray-800 px-2 py-1 text-white"
+          >
+            Sign Out
+          </button>
+        </div>
       ) : (
-        <div className="color-[#D6BC97]">
-          <Link href={"/login"}>
-            <a>Login</a>
+        <div className="text-[#D6BC97]">
+          <Link href="/login">
+            <div className="rounded bg-gray-800 px-2 py-1 text-white">
+              Login
+            </div>
           </Link>
         </div>
       )}

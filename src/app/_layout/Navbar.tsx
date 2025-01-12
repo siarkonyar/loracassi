@@ -3,6 +3,8 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import LoginStatus from "../_components/user/LoginStatus";
+import { SessionProvider } from "next-auth/react";
+import Link from "next/link";
 
 export default function Navbar() {
   const [language, setLanguage] = useState("EN");
@@ -123,15 +125,19 @@ export default function Navbar() {
 
         {/* Centered content */}
         <div className="navbar-center">
-          <Image
-            src="/lora-cassi-logo.svg"
-            alt="Centered Logo"
-            width={200} // Adjust width as needed
-            height={200} // Adjust height as needed
-            className="object-contain" // Ensures image scales correctly
-          />
+          <Link href={"/dashboard"}>
+            <Image
+              src="/lora-cassi-logo.svg"
+              alt="Centered Logo"
+              width={200} // Adjust width as needed
+              height={200} // Adjust height as needed
+              className="object-contain" // Ensures image scales correctly
+            />
+          </Link>
         </div>
-        <LoginStatus />
+        <SessionProvider>
+          <LoginStatus />
+        </SessionProvider>
       </nav>
 
       <div className="navbar-line"></div>

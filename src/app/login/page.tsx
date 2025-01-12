@@ -3,44 +3,57 @@
 import React, { useState } from "react";
 import Navbar from "../_layout/Navbar";
 import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const loginMutation = api.user.login.useMutation();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Validation states
+  // Validation and state management
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Reset validation
     setEmailError(false);
     setPasswordError(false);
+    setServerError("");
+    setIsLoading(true);
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     let isValid = true;
 
-    // Validate Email
-    if (email.trim() === "") {
+    if (!emailRegex.test(email)) {
       setEmailError(true);
       isValid = false;
     }
 
-    // Validate Password
-    if (password.trim() === "") {
+    if (password.trim().length < 6) {
       setPasswordError(true);
       isValid = false;
     }
 
-    // Proceed if all fields are valid
     if (isValid) {
-      loginMutation.mutate({
-        email,
-        password,
-      });
+      try {
+        await loginMutation.mutateAsync({ email, password });
+        setIsLoading(false);
+        void router.push("/dashboard");
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setServerError(error.message || "An error occurred during login.");
+        } else {
+          setServerError("An unexpected error occurred.");
+        }
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -50,7 +63,7 @@ export default function Page() {
       <div className="flex min-h-screen items-center justify-center bg-[#E8E1D6]">
         <div className="w-[400px] rounded-lg px-6 py-20">
           <h2 className="lc-header mb-4 text-center text-2xl font-semibold">
-            Sign Up
+            Sign In
           </h2>
           <form className="space-y-4" onSubmit={handleLogin}>
             {/* Email */}
@@ -68,6 +81,8 @@ export default function Page() {
                     setEmailError(false);
                   }}
                   placeholder="abc@example.com"
+                  aria-invalid={emailError}
+                  aria-describedby="email-error"
                   className={`w-full rounded-md border px-10 py-2 text-sm focus:outline-none focus:ring-2 ${
                     emailError
                       ? "border-red-500 bg-[#F2C2C2] focus:ring-red-500"
@@ -80,7 +95,7 @@ export default function Page() {
                 {emailError && (
                   <span
                     className="absolute right-3 top-1/2 -translate-y-1/2 transform text-red-500"
-                    title="Email is required"
+                    title="Invalid email address"
                   >
                     ❗
                   </span>
@@ -106,6 +121,8 @@ export default function Page() {
                     setPasswordError(false);
                   }}
                   placeholder="••••••••"
+                  aria-invalid={passwordError}
+                  aria-describedby="password-error"
                   className={`w-full rounded-md border px-10 py-2 text-sm focus:outline-none focus:ring-2 ${
                     passwordError
                       ? "border-red-500 bg-[#F2C2C2] focus:ring-red-500"
@@ -115,7 +132,7 @@ export default function Page() {
                 {passwordError && (
                   <span
                     className="absolute right-3 top-1/2 -translate-y-1/2 transform text-red-500"
-                    title="Password is required"
+                    title="Password must be at least 6 characters"
                   >
                     ❗
                   </span>
@@ -123,13 +140,23 @@ export default function Page() {
               </div>
             </div>
 
+            {/* Server Error */}
+            {serverError && (
+              <div className="mb-4 text-sm text-red-500">{serverError}</div>
+            )}
+
             {/* Submit Button */}
             <div className="mt-4">
               <button
                 type="submit"
-                className="w-full rounded-md bg-[#A68B5C] px-4 py-2 text-sm font-medium text-[#FFF8E6] hover:bg-[#d1a56a]"
+                className={`w-full rounded-md px-4 py-2 text-sm font-medium text-[#FFF8E6] ${
+                  isLoading
+                    ? "cursor-not-allowed bg-gray-400"
+                    : "bg-[#A68B5C] hover:bg-[#d1a56a]"
+                }`}
+                disabled={isLoading}
               >
-                Sign In
+                {isLoading ? "Signing In..." : "Sign In"}
               </button>
             </div>
           </form>
