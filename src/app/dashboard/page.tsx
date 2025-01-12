@@ -90,37 +90,37 @@ export default function HomePage() {
           >
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
+                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
+                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
+                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
+                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
+                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
+                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
               </div>
             </SwiperSlide>
             <SwiperSlide>
               <div className="product-card-outter">
-                <ProductCard productId="cm5ifsyqu0000wv74abfbk4o8" />
+                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
               </div>
             </SwiperSlide>
           </Swiper>

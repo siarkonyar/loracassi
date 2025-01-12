@@ -51,41 +51,13 @@ login: publicProcedure
 
         console.log("Attempting signIn with email:", email);
 
-        type SignInResult = {
-          error?: string;
-          ok?: boolean;
-          status?: number;
-          url?: string | null;
-        };
-
-        const result = (await signIn("credentials", {
+        await signIn("credentials", {
           redirect: false,
           email,
           password,
-        })) as SignInResult;
-
-        console.log("SignIn result:", result);
-
-        if (!result || result.error) {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: result.error ?? "Invalid credentials",
-          });
-        }
-
-        return {
-          success: true,
-          message: "Login successful",
-        };
+        });
       } catch (error: unknown) {
         console.error("Login error:", error);
-
-        if (error instanceof Error) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: error.message ?? "An unexpected error occurred",
-          });
-        }
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

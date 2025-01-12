@@ -37,20 +37,20 @@ export const authConfig = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Email", type: "email" },
+        email: { label: "Email", type: "string" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: Partial<Record<"username" | "password", unknown>> | undefined) {
-        const username = credentials?.username as string;
-        const password = credentials?.password as string;
+      async authorize(credentials: Partial<Record<"email" | "password", unknown>> | undefined) {
+        const email = credentials?.email;
+        const password = credentials?.password;
 
-        if (!username || !password) {
-          throw new Error("Email and password are required");
+        if (!password || !email) {
+          throw new Error("password and email are required");
         }
 
         // Find the user by email
         const user = await prisma.user.findFirst({
-          where: { email: username },
+          where: { email: email },
         });
 
         if (!user) {
@@ -62,14 +62,19 @@ export const authConfig = {
         }
 
         // Validate password
-        const isPasswordValid = await verifyPassword(password, user.password);
+        const isPasswordValid = await verifyPassword(password as string, user.password);
         if (!isPasswordValid) {
           throw new Error("Invalid password");
         }
 
         // Exclude sensitive fields before returning the user object
-        const { password: _, ...userWithoutPassword } = user;
-        return userWithoutPassword;
+        const { password: userPassword, ...userWithoutPassword } = user;
+        console.log("User:", userWithoutPassword);
+        return {
+          id: userWithoutPassword.id,
+          email: userWithoutPassword.email,
+          name: userWithoutPassword.name,
+        };
       },
     }),
     GoogleProvider({
@@ -88,5 +93,23 @@ export const authConfig = {
   session:{
     strategy: "jwt" as const,
   },
-  debug: process.env.NODE_ENV !== "production"
+  debug: process.env.NODE_ENV !== "production",
+  callbacks: {
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.email = token.email!;
+        session.user.name = token.name!;
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+      }
+      return token;
+    },
+  },
 } satisfies NextAuthConfig;
