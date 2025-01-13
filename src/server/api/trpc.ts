@@ -110,6 +110,14 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
+const isAdmin = t.middleware(({ ctx, next }) => {
+  if (ctx.session?.user.role !== "ADMIN") {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({ ctx });
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -131,3 +139,5 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+export const adminProcedure = protectedProcedure.use(isAdmin);

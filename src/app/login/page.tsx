@@ -3,11 +3,9 @@
 import React, { useState } from "react";
 import Navbar from "../_layout/Navbar";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
 
 export default function Page() {
   const loginMutation = api.user.login.useMutation();
-  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,16 +39,25 @@ export default function Page() {
 
     if (isValid) {
       try {
-        await loginMutation.mutateAsync({ email, password });
+        const result = await loginMutation.mutateAsync({
+          email,
+          password,
+        });
+
+        if (result.success) {
+          // Redirect after successful login
+          window.location.href = "/dashboard"; // Use window.location instead of router
+        } else {
+          setServerError("Login failed");
+        }
         setIsLoading(false);
-        void router.push("/dashboard");
       } catch (error: unknown) {
+        setIsLoading(false);
         if (error instanceof Error) {
           setServerError(error.message || "An error occurred during login.");
         } else {
           setServerError("An unexpected error occurred.");
         }
-        setIsLoading(false);
       }
     } else {
       setIsLoading(false);

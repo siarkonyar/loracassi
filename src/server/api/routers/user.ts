@@ -56,6 +56,8 @@ login: publicProcedure
           email,
           password,
         });
+
+        return { success: true };
       } catch (error: unknown) {
         console.error("Login error:", error);
 

@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "../../server/db"
 import { verifyPassword } from "~/scripts/utils/hash";
+import { UserRole } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -15,15 +16,9 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      role: UserRole;
     } & DefaultSession["user"];
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -40,17 +35,16 @@ export const authConfig = {
         email: { label: "Email", type: "string" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: Partial<Record<"email" | "password", unknown>> | undefined) {
+      async authorize(credentials) {
         const email = credentials?.email;
         const password = credentials?.password;
 
         if (!password || !email) {
-          throw new Error("password and email are required");
+          throw new Error("Email and password are required");
         }
 
-        // Find the user by email
         const user = await prisma.user.findFirst({
-          where: { email: email },
+          where: { email: email as string },
         });
 
         if (!user) {
@@ -61,19 +55,17 @@ export const authConfig = {
           throw new Error("User has no password set");
         }
 
-        // Validate password
         const isPasswordValid = await verifyPassword(password as string, user.password);
         if (!isPasswordValid) {
           throw new Error("Invalid password");
         }
 
-        // Exclude sensitive fields before returning the user object
-        const { password: userPassword, ...userWithoutPassword } = user;
-        console.log("User:", userWithoutPassword);
+        // Return only the necessary user data
         return {
-          id: userWithoutPassword.id,
-          email: userWithoutPassword.email,
-          name: userWithoutPassword.name,
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
         };
       },
     }),
@@ -100,6 +92,7 @@ export const authConfig = {
         session.user.id = token.id as string;
         session.user.email = token.email!;
         session.user.name = token.name!;
+        session.user.role = token.role as UserRole;
       }
       return session;
     },
