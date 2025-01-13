@@ -59,7 +59,12 @@ login: publicProcedure
 
         return { success: true };
       } catch (error: unknown) {
-        console.error("Login error:", error);
+        if (error instanceof Error) {
+          const message = error.message;
+          console.error(message);
+        } else {
+        console.error("An unknown error occurred.");
+    }
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

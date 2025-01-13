@@ -52,12 +52,12 @@ export default function Page() {
         }
         setIsLoading(false);
       } catch (error: unknown) {
-        setIsLoading(false);
         if (error instanceof Error) {
           setServerError(error.message || "An error occurred during login.");
         } else {
           setServerError("An unexpected error occurred.");
         }
+        setIsLoading(false);
       }
     } else {
       setIsLoading(false);
