@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "../../server/db"
 import { verifyPassword } from "~/scripts/utils/hash";
-import { UserRole } from "@prisma/client";
+import { type UserRole } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -75,7 +75,7 @@ export const authConfig = {
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/auth/login",
     signOut: "/auth/signout",
     error: "/auth/error",
     verifyRequest: "/auth/verify",
