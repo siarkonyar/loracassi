@@ -14,7 +14,10 @@ import { TRPCError } from "@trpc/server";
 
 export const userRouter = createTRPCRouter({
 login: publicProcedure
-    .input(UserPartialSchema.or(z.null())) // Ensure schema validation
+    .input(UserPartialSchema.or(z.object({
+      email: z.string(),
+      password: z.string()
+    }))) // Ensure schema validation
     .mutation(async ({ input, ctx }) => {
       try {
         // Check if user exists
