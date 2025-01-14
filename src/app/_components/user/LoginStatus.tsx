@@ -23,7 +23,7 @@ export default function LoginStatus() {
         </div>
       ) : (
         <div className="text-[#D6BC97]">
-          <Link href="/login">
+          <Link href="/auth/login">
             <div className="rounded bg-gray-800 px-2 py-1 text-white">
               Login
             </div>
