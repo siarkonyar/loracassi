@@ -13,7 +13,7 @@ export default function LoginStatus() {
     <>
       {session?.user ? (
         <div className="flex items-center gap-4 text-[#D6BC97]">
-          <span>{session.user.name}</span>
+          <span>{session.user.role ? session.user.role : "annen"}</span>
           <button
             onClick={() => signOut()}
             className="rounded bg-gray-800 px-2 py-1 text-white"

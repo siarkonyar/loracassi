@@ -19,6 +19,13 @@ declare module "next-auth" {
       role: UserRole;
     } & DefaultSession["user"];
   }
+
+  interface User {
+    id?: string;
+    email?: string | null;
+    name?: string | null;
+    role?: UserRole;
+  }
 }
 
 /**
@@ -87,6 +94,15 @@ export const authConfig = {
   },
   debug: process.env.NODE_ENV !== "production",
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
@@ -95,14 +111,6 @@ export const authConfig = {
         session.user.role = token.role as UserRole;
       }
       return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-      }
-      return token;
     },
   },
 } satisfies NextAuthConfig;

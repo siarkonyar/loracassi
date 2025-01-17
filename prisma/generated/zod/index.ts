@@ -26,7 +26,7 @@ export const CartScalarFieldEnumSchema = z.enum(['id','userId','sessionId','crea
 
 export const CartItemScalarFieldEnumSchema = z.enum(['id','cartId','productId','quantity']);
 
-export const ProductScalarFieldEnumSchema = z.enum(['id','name','price','discount','headImage','images','createdAt','updatedAt','description','categoryId']);
+export const ProductScalarFieldEnumSchema = z.enum(['id','name','price','discount','headImage','images','stock','createdAt','updatedAt','description','categoryId']);
 
 export const VerificationTokenScalarFieldEnumSchema = z.enum(['identifier','token','expires']);
 
@@ -717,10 +717,11 @@ export const CartItemWithPartialRelationsSchema: z.ZodType<CartItemWithPartialRe
 export const ProductSchema = z.object({
   id: z.string().cuid(),
   name: z.string(),
-  price: z.number().int(),
+  price: z.number(),
   discount: z.number().int().nullish(),
   headImage: z.string(),
   images: z.string().nullish(),
+  stock: z.number().int(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   description: z.string().nullish(),
@@ -742,6 +743,7 @@ export type ProductPartial = z.infer<typeof ProductPartialSchema>
 
 export const ProductOptionalDefaultsSchema = ProductSchema.merge(z.object({
   id: z.string().cuid().optional(),
+  stock: z.number().int().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 }))

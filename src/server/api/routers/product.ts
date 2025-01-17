@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 
-import { ProductSchema } from "prisma/generated/zod";
+import { ProductPartialSchema, ProductSchema } from "prisma/generated/zod";
 
 
 export const productRouter = createTRPCRouter({
@@ -15,5 +16,49 @@ export const productRouter = createTRPCRouter({
         where: { id: input.id }
       });
       return product;
+    }),
+
+  getAllProducts: publicProcedure
+    .query(async ({ ctx }) => {
+      return ctx.db.product.findMany();
+    }),
+
+  createProduct: adminProcedure
+    .input(ProductPartialSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.product.create({
+          data: {
+            name: input.name ?? "",
+            price: input.price ?? 0,
+            stock: input.stock,
+            discount: input.discount ?? 0,
+            headImage: input.headImage ?? "",
+            images: input.images ?? undefined,
+            description: input.description ?? "",
+            categoryId: input.categoryId,
+          }
+        });
+      } catch (error: unknown) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error instanceof Error ? error.message : "Failed to create product",
+        });
+      }
+    }),
+
+  updateProduct: adminProcedure
+    .input(ProductPartialSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.product.update({
+        where: { id: input.id },
+        data: input,
+      });
+    }),
+
+  deleteProduct: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.product.delete({ where: { id: input.id } });
     }),
 });

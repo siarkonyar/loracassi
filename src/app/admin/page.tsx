@@ -2,10 +2,12 @@
 
 import React from "react";
 import { UploadButton, UploadDropzone } from "~/utils/uploadthing/uploadthing";
+import AdminNavbar from "./_components/AdminNavbar";
 
 export default function Page() {
   return (
     <>
+      <AdminNavbar />
       <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
