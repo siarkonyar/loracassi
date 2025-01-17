@@ -43,4 +43,13 @@ export const categoryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.db.category.delete({ where: { id: input.id } });
     }),
+
+  updateCategory: adminProcedure
+    .input(CategoryPartialSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.category.update({
+        where: { id: input.id },
+        data: input,
+      });
+    }),
 });

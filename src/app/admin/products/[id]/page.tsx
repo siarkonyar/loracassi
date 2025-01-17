@@ -6,7 +6,7 @@ import { api } from "~/trpc/react";
 import AdminNavbar from "../../_components/AdminNavbar";
 import Image from "next/image";
 import { XCircle } from "lucide-react";
-import { useUploadThing, utapi } from "~/utils/uploadthing/uploadthing";
+import { useUploadThing } from "~/utils/uploadthing/uploadthing";
 
 export default function EditProductPage({
   params,
@@ -57,6 +57,7 @@ export default function EditProductPage({
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const stock = parseInt(formData.get("stock") as string, 10);
+    const discount = parseInt(formData.get("discount") as string, 10) || 0;
     const categoryId = formData.get("categoryId")
       ? parseInt(formData.get("categoryId") as string, 10)
       : undefined;
@@ -69,7 +70,10 @@ export default function EditProductPage({
         if (product?.headImage) {
           const fileKey = product.headImage.split("/").pop();
           if (fileKey) {
-            await utapi.deleteFiles(fileKey);
+            await fetch("/api/uploadthing/delete", {
+              method: "POST",
+              body: JSON.stringify({ fileKey }),
+            });
           }
         }
 
@@ -87,6 +91,7 @@ export default function EditProductPage({
         stock,
         categoryId,
         headImage,
+        discount,
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -217,6 +222,26 @@ export default function EditProductPage({
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Discount */}
+          <div>
+            <label
+              className="mb-1 block text-sm font-medium"
+              htmlFor="discount"
+            >
+              Discount (%)
+            </label>
+            <input
+              name="discount"
+              type="number"
+              id="discount"
+              defaultValue={product.discount ?? 0}
+              min="0"
+              max="100"
+              placeholder="Enter discount percentage"
+              className="w-full rounded-md border border-black px-4 py-2 text-sm focus:outline-none focus:ring-2"
+            />
           </div>
 
           {/* Submit Button */}

@@ -3,6 +3,7 @@ import { adminProcedure, createTRPCRouter, publicProcedure } from "~/server/api/
 import { TRPCError } from "@trpc/server";
 
 import { ProductPartialSchema, ProductSchema } from "prisma/generated/zod";
+import { utapi } from "~/server/uploadthing/utils";
 
 
 export const productRouter = createTRPCRouter({
@@ -59,6 +60,12 @@ export const productRouter = createTRPCRouter({
   deleteProduct: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const product = await ctx.db.product.findUniqueOrThrow({
+        where: { id: input.id }
+      });
+      if (product.headImage) {
+        await utapi.deleteFiles(product.headImage);
+      }
       return ctx.db.product.delete({ where: { id: input.id } });
     }),
 });

@@ -68,9 +68,12 @@ export default function CategoriesPage() {
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                    <button className="mr-2 text-indigo-600 hover:text-indigo-900">
+                    <Link
+                      href={`/admin/categories/${category.id}`}
+                      className="mr-2 text-indigo-600 hover:text-indigo-900"
+                    >
                       Edit
-                    </button>
+                    </Link>
                     <button
                       onClick={() => handleDelete(category.id)}
                       className="text-red-600 hover:text-red-900"
