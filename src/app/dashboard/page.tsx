@@ -13,8 +13,10 @@ import Navbar from "../_layout/Navbar";
 import ProductCard from "../_components/product/ProductCard";
 import GoldFrameButton from "../_components/buttons/GoldFrameButton";
 import Footer from "../_layout/Footer";
+import { api } from "~/trpc/react";
 
 export default function HomePage() {
+  const products = api.product.getAllProducts.useQuery();
   return (
     <>
       <Navbar />
@@ -88,41 +90,13 @@ export default function HomePage() {
             }}
             className="item-card-swiper-carousel"
           >
-            <SwiperSlide>
-              <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="product-card-outter">
-                <ProductCard productId="cm5a2pk2l0000pxeo42c7ft0c" />
-              </div>
-            </SwiperSlide>
+            {products.data?.map((product) => (
+              <SwiperSlide key={product.id}>
+                <div className="product-card-outter">
+                  <ProductCard productId={product.id} />
+                </div>
+              </SwiperSlide>
+            ))}
           </Swiper>
         </div>
         <div className="flex justify-center py-12">
