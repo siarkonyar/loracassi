@@ -32,25 +32,9 @@ export const VerificationTokenScalarFieldEnumSchema = z.enum(['identifier','toke
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
-export const PostOrderByRelevanceFieldEnumSchema = z.enum(['name','createdById']);
+export const QueryModeSchema = z.enum(['default','insensitive']);
 
 export const NullsOrderSchema = z.enum(['first','last']);
-
-export const AccountOrderByRelevanceFieldEnumSchema = z.enum(['id','userId','type','provider','providerAccountId','refresh_token','access_token','token_type','scope','id_token','session_state']);
-
-export const SessionOrderByRelevanceFieldEnumSchema = z.enum(['id','sessionToken','userId']);
-
-export const UserOrderByRelevanceFieldEnumSchema = z.enum(['id','name','email','password','phoneNumber']);
-
-export const CategoryOrderByRelevanceFieldEnumSchema = z.enum(['name']);
-
-export const CartOrderByRelevanceFieldEnumSchema = z.enum(['userId','sessionId']);
-
-export const CartItemOrderByRelevanceFieldEnumSchema = z.enum(['productId']);
-
-export const ProductOrderByRelevanceFieldEnumSchema = z.enum(['id','name','headImage','images','description']);
-
-export const VerificationTokenOrderByRelevanceFieldEnumSchema = z.enum(['identifier','token']);
 
 export const UserRoleSchema = z.enum(['USER','ADMIN']);
 
@@ -720,7 +704,7 @@ export const ProductSchema = z.object({
   price: z.number(),
   discount: z.number().int().nullish(),
   headImage: z.string(),
-  images: z.string().nullish(),
+  images: z.string().array(),
   stock: z.number().int(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
@@ -743,6 +727,7 @@ export type ProductPartial = z.infer<typeof ProductPartialSchema>
 
 export const ProductOptionalDefaultsSchema = ProductSchema.merge(z.object({
   id: z.string().cuid().optional(),
+  images: z.string().array().optional(),
   stock: z.number().int().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),

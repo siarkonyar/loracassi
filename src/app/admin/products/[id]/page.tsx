@@ -17,6 +17,8 @@ export default function EditProductPage({
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const { data: product } = api.product.getProduct.useQuery({
     id: resolvedParams.id,
@@ -50,6 +52,22 @@ export default function EditProductPage({
     setPreviewUrl(url);
   };
 
+  const handleAdditionalImagesSelect = (files: FileList) => {
+    const newFiles = Array.from(files);
+    setSelectedFiles((prev) => [...prev, ...newFiles]);
+
+    const newUrls = newFiles.map((file) => URL.createObjectURL(file));
+    setPreviewUrls((prev) => [...prev, ...newUrls]);
+  };
+
+  const removeAdditionalImage = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviewUrls((prev) => {
+      URL.revokeObjectURL(prev[index]!);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -64,6 +82,7 @@ export default function EditProductPage({
 
     try {
       let headImage = product?.headImage ?? "";
+      let images = product?.images ?? [];
 
       if (selectedFile) {
         // Delete old image if it exists
@@ -84,6 +103,27 @@ export default function EditProductPage({
         }
       }
 
+      if (selectedFiles.length > 0) {
+        // Delete old images if they exist
+        if (product?.images?.length) {
+          for (const imageUrl of product.images) {
+            const fileKey = imageUrl.split("/").pop();
+            if (fileKey) {
+              await fetch("/api/uploadthing/delete", {
+                method: "POST",
+                body: JSON.stringify({ fileKey }),
+              });
+            }
+          }
+        }
+
+        // Upload new images
+        const uploadResult = await startUpload(selectedFiles);
+        if (uploadResult) {
+          images = uploadResult.map((file) => file.url);
+        }
+      }
+
       await updateProductMutation.mutateAsync({
         id: resolvedParams.id,
         name,
@@ -91,6 +131,7 @@ export default function EditProductPage({
         stock,
         categoryId,
         headImage,
+        images,
         discount,
       });
     } catch (error) {
@@ -242,6 +283,68 @@ export default function EditProductPage({
               placeholder="Enter discount percentage"
               className="w-full rounded-md border border-black px-4 py-2 text-sm focus:outline-none focus:ring-2"
             />
+          </div>
+
+          {/* Additional Images Upload */}
+          <div>
+            <label className="mb-1 block text-sm font-medium">
+              Additional Images
+            </label>
+            <div className="space-y-4">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) =>
+                  e.target.files && handleAdditionalImagesSelect(e.target.files)
+                }
+                className="rounded-md border border-gray-300 px-4 py-2"
+              />
+              <div className="grid grid-cols-3 gap-4">
+                {/* Show existing images */}
+                {product.images?.map((imageUrl, index) => (
+                  <div key={imageUrl} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => removeAdditionalImage(index)}
+                      className="absolute -right-2 -top-2 z-10 rounded-full bg-white text-gray-500 hover:text-red-500"
+                    >
+                      <XCircle className="h-6 w-6" />
+                    </button>
+                    <Image
+                      src={imageUrl}
+                      alt={`Product image ${index + 1}`}
+                      width={200}
+                      height={200}
+                      className="rounded-lg object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.png";
+                      }}
+                    />
+                  </div>
+                ))}
+                {/* Show preview of new images */}
+                {previewUrls.map((url, index) => (
+                  <div key={url} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => removeAdditionalImage(index)}
+                      className="absolute -right-2 -top-2 z-10 rounded-full bg-white text-gray-500 hover:text-red-500"
+                    >
+                      <XCircle className="h-6 w-6" />
+                    </button>
+                    <Image
+                      src={url}
+                      alt={`New image ${index + 1}`}
+                      width={200}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Submit Button */}

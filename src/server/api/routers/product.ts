@@ -1,17 +1,15 @@
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { TRPCError } from "@trpc/server";
 
-import { ProductPartialSchema, ProductSchema } from "prisma/generated/zod";
+import { ProductPartialSchema } from "prisma/generated/zod";
 import { utapi } from "~/server/uploadthing/utils";
-
+import { TRPCError } from "@trpc/server";
 
 export const productRouter = createTRPCRouter({
   getProduct: publicProcedure
     .input(z.object({
       id: z.string()
     }))
-    .output(ProductSchema.nullable())
     .query(async ({ input, ctx }) => {
       const product = await ctx.db.product.findUniqueOrThrow({
         where: { id: input.id }
@@ -27,23 +25,25 @@ export const productRouter = createTRPCRouter({
   createProduct: adminProcedure
     .input(ProductPartialSchema)
     .mutation(async ({ ctx, input }) => {
+      const { ...data } = input;
       try {
         return await ctx.db.product.create({
           data: {
-            name: input.name ?? "",
-            price: input.price ?? 0,
-            stock: input.stock,
-            discount: input.discount ?? 0,
-            headImage: input.headImage ?? "",
-            images: input.images ?? undefined,
-            description: input.description ?? "",
-            categoryId: input.categoryId,
-          }
+            name: data.name ?? "",
+            price: data.price ?? 0,
+            headImage: data.headImage ?? "",
+            stock: data.stock ?? 0,
+            images: data.images ?? [],
+            discount: data.discount ?? null,
+            description: data.description ?? null,
+            categoryId: data.categoryId ?? null,
+          },
         });
-      } catch (error: unknown) {
+      } catch (err) {
+        const error = err as Error;
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: error instanceof Error ? error.message : "Failed to create product",
+          message: error.message ?? "Failed to create product",
         });
       }
     }),
@@ -51,9 +51,12 @@ export const productRouter = createTRPCRouter({
   updateProduct: adminProcedure
     .input(ProductPartialSchema)
     .mutation(async ({ ctx, input }) => {
+      const { id, ...data } = input;
       return ctx.db.product.update({
-        where: { id: input.id },
-        data: input,
+        where: { id },
+        data: {
+          ...data,
+        },
       });
     }),
 

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
