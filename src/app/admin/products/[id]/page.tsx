@@ -24,6 +24,9 @@ export default function EditProductPage({
     id: resolvedParams.id,
   });
 
+  let headImage = product?.headImage ?? "";
+  let images = product?.images ?? [];
+
   const { data: categories } = api.category.getAllCategories.useQuery();
 
   const { startUpload } = useUploadThing("imageUploader", {
@@ -81,9 +84,6 @@ export default function EditProductPage({
       : undefined;
 
     try {
-      let headImage = product?.headImage ?? "";
-      let images = product?.images ?? [];
-
       if (selectedFile) {
         // Delete old image if it exists
         if (product?.headImage) {
@@ -302,7 +302,7 @@ export default function EditProductPage({
               />
               <div className="grid grid-cols-3 gap-4">
                 {/* Show existing images */}
-                {product.images?.map((imageUrl, index) => (
+                {images.map((imageUrl, index) => (
                   <div key={imageUrl} className="relative">
                     <button
                       type="button"

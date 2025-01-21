@@ -1,6 +1,7 @@
 import { signIn } from "~/server/auth";
 import Navbar from "../../_layout/Navbar";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -81,6 +82,11 @@ export default function Page() {
               </button>
             </div>
           </form>
+          <div className="mt-4 text-center text-sm text-[#A68B5C]">
+            <Link href="/auth/register">
+              Don&apos;t have an account? Sign up
+            </Link>
+          </div>
         </div>
       </div>
     </>
